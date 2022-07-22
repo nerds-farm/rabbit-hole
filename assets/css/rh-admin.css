@@ -1,0 +1,15 @@
+#rabbit_hole .bulk-select-button {
+    width: 100%;
+}
+#rabbit_hole .postbox.rh-settings {
+    padding: 20px;
+    background-color: transparent;
+}
+#rabbit_hole .nav-tab-wrapper, 
+#rabbit_hole .postbox.rh-settings {
+    margin-right: 20px;
+}
+
+.edit-post-layout #rabbit_hole .accordion-section-content {
+    background-color:#eee;
+}
