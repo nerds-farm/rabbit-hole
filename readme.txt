@@ -1,5 +1,5 @@
 === Rabbit Hole ===
-Contributors: nerds-farm
+Contributors: nerdsfarm, frapesce
 Tags: redirect, 404, seo, cpt, post type, deny, allow
 Requires at least: 4.9
 Tested up to: 6.0
@@ -55,7 +55,8 @@ Once you enable the Allow override for single post type you will find the dedica
 
 == Screenshots ==
 1. Admin Global settings on the Settings -> Rabbit Hole.
-2. Settings on Single Post Edit metabox for override global configuration.
+2. Specify a Redirect rule for a specific Post Type, same options available for Single Post.
+3. Settings on Single Post Edit metabox for override global configuration.
 
 == Changelog ==
 

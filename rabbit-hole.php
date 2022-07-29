@@ -5,7 +5,7 @@
  * Plugin Name: Rabbit Hole
  * Plugin URI:  https://wordpress.org/plugins/rabbit-hole/
  * Description: Rabbit Hole is a module that adds the ability to control what should happen when an entity is being viewed at its own page.
- * Version:     1.0.2
+ * Version:     1.0.1
  * Author:      Nerds Farm
  * Author URI:  https://nerds.farm
  * License:     GPLv3 or later

@@ -34,7 +34,7 @@ if (!function_exists('rabbit_hole_config')) {
         $redirect_response = !empty($settings['redirect_response']) ? $settings['redirect_response'] : '301';
         ?>
         <h3><?php _e('Behavior', 'rabbit-hole'); ?></h3>
-        <p><?php _e('What should happen when someone tries to visit an entity page for this content type?', 'rabbit-hole'); ?></p>
+        <p><?php echo $singular ? __('What should happen when someone tries to visit this page?', 'rabbit-hole') : __('What should happen when someone tries to visit an entity page for this content type?', 'rabbit-hole'); ?></p>
         <?php
         $akey = '[' . esc_attr($ptkey) . ']';
         $options = rabbit_hole_get_options();
@@ -45,7 +45,7 @@ if (!function_exists('rabbit_hole_config')) {
         foreach ($options as $opt => $option) {
             ?>
             <div>  
-                <label for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__behavior__<?php echo esc_attr($opt); ?>"><input type="radio" class="rabbit_hole_behavior" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__behavior__<?php echo esc_attr($opt); ?>" name="rabbit_hole<?php echo esc_attr($akey); ?>[behavior]" value="<?php echo esc_attr($opt); ?>"<?php echo ($behavior == $opt) ? ' checked' : ''; ?>><?php _e($option); ?></label>
+                <label for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__behavior__<?php echo esc_attr($opt); ?>"><input type="radio" class="rabbit_hole_behavior" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__behavior__<?php echo esc_attr($opt); ?>" name="rabbit_hole<?php echo esc_attr($akey); ?>[behavior]" value="<?php echo esc_attr($opt); ?>"<?php echo ($behavior == $opt) ? ' checked' : ''; ?>><?php esc_html_e($option); ?></label>
                 <?php if ($opt == '30x') { ?>
                     <div class="accordion-section-content">
                         <h4><?php _e('Redirect settings', 'rabbit-hole'); ?></h4>
@@ -57,7 +57,7 @@ if (!function_exists('rabbit_hole_config')) {
                         <p><?php _e('The response code that should be sent to the users browser. Follow this link for more information on response codes.', 'rabbit-hole'); ?></p>
                         <select class="rabbit-hole-redirect-response-setting form-select" id="rh-redirect-response" name="rabbit_hole<?php echo esc_attr($akey); ?>[redirect_response]">
                     <?php foreach (rabbit_hole_get_responses() as $rkey => $response) { ?>
-                                <option value="<?php echo esc_attr($rkey); ?>"<?php echo ($redirect_response == $rkey) ? ' selected="selected"' : ''; ?>><?php _e($response); ?></option>
+                                <option value="<?php echo esc_attr($rkey); ?>"<?php echo ($redirect_response == $rkey) ? ' selected="selected"' : ''; ?>><?php esc_html_e($response); ?></option>
                 <?php } ?>
                         </select>
                     </div>

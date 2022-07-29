@@ -46,7 +46,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                     $i = 0;
                     foreach ($post_types as $ptkey => $post_type) {
                         ?>
-                        <a href="#<?php echo esc_attr($ptkey); ?>" class="nav-tab<?php echo (!$i) ? ' nav-tab-active' : ''; ?>" aria-current="page"><?php _e($post_type->label); ?></a>
+                        <a href="#<?php echo esc_attr($ptkey); ?>" class="nav-tab<?php echo (!$i) ? ' nav-tab-active' : ''; ?>" aria-current="page"><?php esc_html_e($post_type->label); ?></a>
                     <?php
                     $i++;
                 }
@@ -59,14 +59,14 @@ if (!function_exists('rabbit_hole_options_page')) {
                     $allow_override = !empty($settings['allow_override']) ? $settings['allow_override'] : '';
                     ?>
                     <div class="rh-settings postbox" id="<?php echo esc_attr($ptkey); ?>" <?php echo ($i) ? ' style="display:none;"' : ''; ?>>
-                        <div class="postbox-header"><h2 class="hndle ui-sortable-handle"><?php _e($post_type->label); ?></h2></div>
+                        <div class="postbox-header"><h2 class="hndle ui-sortable-handle"><?php esc_html_e($post_type->label); ?></h2></div>
                         <div class="inner">
                             <label class="bulk-select-button" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__allow_override">
                                 <input type="checkbox" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__allow_override" name="rabbit_hole[<?php echo esc_attr($ptkey); ?>][allow_override]"<?php echo $allow_override ? ' checked' : ''; ?>>
                                 <?php _e('Allow these settings to be overridden for individual entities', 'rabbit-hole'); ?>
                             </label>
                             <br>
-                    <?php rabbit_hole_config($ptkey, $settings); ?>
+                            <?php rabbit_hole_config($ptkey, $settings); ?>
                         </div>
                     </div>
 
