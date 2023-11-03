@@ -7,7 +7,7 @@
  * Description: Rabbit Hole is a module that adds the ability to control what should happen when an entity is being viewed at its own page.
  * Version:     1.1
  * Author:      frafish
- * Author URI:  https://nerds.farm
+ * Author URI:  https://pescefrancesco.it
  * License:     GPLv3 or later
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: rabbit-hole

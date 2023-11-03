@@ -20,23 +20,27 @@ Rabbit Hole can prevent this object from being accessible on its own page, throu
 
 This works by providing multiple options to control what should happen when the entity is being viewed at its own page. 
 You have the ability to
+- Deliver an access denied page (401, 403).
+- Deliver a page not found page (404).
+- Issue a page redirect to any path or external url (301, 30x).
+- Or simply display the entity (regular behavior, 200).
 
-- Deliver an access denied page.
-- Deliver a page not found page.
-- Issue a page redirect to any path or external url.
-- Or simply display the entity (regular behavior).
-
-This is configurable per post type and per single post type. 
+This is configurable per:
+- post type and single post. 
+- taxonomy and single term
+- roles and single user
 
 It's possible to generate dynamic values with Twig or Shortcode for the redirect path. 
 This makes it possible to execute different redirects based on whatever logics you need. 
 Perhaps you want a user to be able to view nodes that he has created, but no one else's. 
 
-**Coming soon** 
-- *Conditions*
-There will be the possibility to configure a User Role that override Rabbit Hole completely, useful for Memberships.
+New options:
 - *Archives*
 Support for Terms and Authors archive pages
+- *Conditions*
+There will be the possibility to configure a User Role that override Rabbit Hole completely, useful for Memberships.
+- *Display Message*
+Show a custom Message for unauthorized page (401, 403)
 
 **Drupal porting**
 This is porting from a beloved [Drupal module](https://www.drupal.org/project/rabbit_hole) which I used in all my projects.
@@ -49,9 +53,9 @@ Thanks to the authors for the idea.
 You can find global configuration in Settings => Rabbit Hole.
 By default all CPT are predefined as Display page, following the classic WP behavior.
 
-= How can I change behavior for a single post =
+= How can I change behavior for a single Post? =
 
-Once you enable the Allow override for single post type you will find the dedicated configuration metabox in post Edit page.
+Once you enable the "Allow override" for single post type you will find the dedicated configuration metabox in post Edit page.
 
 == Screenshots ==
 1. Admin Global settings on the Settings -> Rabbit Hole.
@@ -59,6 +63,11 @@ Once you enable the Allow override for single post type you will find the dedica
 3. Settings on Single Post Edit metabox for override global configuration.
 
 == Changelog ==
+
+= 1.1 - 2023-11-04 =
+* Add: Support for Authors and Terms archives
+* Add: Bypass rules by current User Roles
+* Add: Alternate Message for Denied code (401, 403)
 
 = 1.0.1 - 2022-07-25 =
 * Initial release.

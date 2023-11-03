@@ -1,5 +1,21 @@
+.rh-logo {
+    vertical-align: middle;
+}
 .bg-white {
     background-color: white;
+}
+.float-end {
+    float: right;
+}
+
+.wp-core-ui .button-primary.button-danger {
+  background-color: #a00;
+  border-color: white;
+}
+.rh-version {
+    margin-right: 20px;
+    text-decoration: none;
+    color: inherit;
 }
 .rh-wrapper {
     margin-right: 20px;
@@ -9,11 +25,14 @@
 .rh-wrapper > h2 {
     border-bottom: 1px solid #dcdcde;
     padding: 1em;
-  margin-left: -20px;
+    margin-left: -20px;
+}
+.rh-wrapper .dashicons {
+  color: #d54e21;
 }
 
-.js #rabbit_hole .postbox .hndle {    
-  cursor: pointer;
+.js #rabbit_hole .postbox .hndle {
+    cursor: pointer;
 }
 
 #rabbit_hole .bulk-select-button {
@@ -23,7 +42,7 @@
     padding: 20px;
     background-color: transparent;
 }
-#rabbit_hole .nav-tab-wrapper, 
+#rabbit_hole .nav-tab-wrapper,
 #rabbit_hole .postbox.rh-settings {
     margin-right: 20px;
 }
@@ -34,4 +53,14 @@
 
 #rabbit_hole .rh-disable-bypassing-roles {
     max-width: 100%;
+}
+
+#rabbit_hole .button-reset {
+    float: left;
+    margin-right: 20px;
+}
+#rabbit_hole .submit {
+    float: left;
+    margin-top: 0;
+    padding-top: 0;
 }
