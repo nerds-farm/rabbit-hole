@@ -180,7 +180,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                 
                 <hr>
                 <div class="bg-white rh-wrapper">
-                <h2> <?php esc_html_e('User Roles', 'rabbit-hole'); ?></h2>
+                <h2><?php esc_html_e('User Roles', 'rabbit-hole'); ?></h2>
                 <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
                     <?php
                     //var_dump($roles);
@@ -207,14 +207,22 @@ if (!function_exists('rabbit_hole_options_page')) {
                 </div>
                 <br><br>
                 <?php if (!empty($settings)) { ?>
-                <a href="?page=rabbit_hole&action=reset" class="button button-primary button-danger button-reset"><span class="dashicons dashicons-warning"style="vertical-align: text-top;"></span> Reset Settings</a>
+                <a href="?page=rabbit_hole&action=reset" class="button button-primary button-danger button-reset"><span class="dashicons dashicons-warning"style="vertical-align: text-top;"></span> <?php esc_html_e('Reset Settings', 'rabbit-hole'); ?></a>
                 <?php
                 }
                 submit_button();
                 ?>
             </form>
         </div>
+        <br class="clear">
         <?php
+        $footer_text = sprintf(
+			/* translators: 1: Elementor, 2: Link to plugin review */
+				__( 'Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!', 'rabbit-hole' ),
+				'<strong>' . esc_html__( 'Rabbit Hole', 'rabbit-hole' ) . '</strong>',
+				'<a href="https://wordpress.org/support/plugin/rabbit-hole/reviews/#new-post" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
+			);
+        echo $footer_text;
         rabbit_hole_assets();
     }
 
