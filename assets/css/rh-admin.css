@@ -1,3 +1,21 @@
+.bg-white {
+    background-color: white;
+}
+.rh-wrapper {
+    margin-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+.rh-wrapper > h2 {
+    border-bottom: 1px solid #dcdcde;
+    padding: 1em;
+  margin-left: -20px;
+}
+
+.js #rabbit_hole .postbox .hndle {    
+  cursor: pointer;
+}
+
 #rabbit_hole .bulk-select-button {
     width: 100%;
 }
@@ -12,4 +30,8 @@
 
 .edit-post-layout #rabbit_hole .accordion-section-content {
     background-color:#eee;
+}
+
+#rabbit_hole .rh-disable-bypassing-roles {
+    max-width: 100%;
 }

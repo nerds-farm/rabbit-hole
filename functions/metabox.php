@@ -1,5 +1,7 @@
 <?php
 
+/* POST ********* */
+
 if (!function_exists('rabbit_hole_meta_box_callback')) {
 
     function rabbit_hole_meta_box_callback($post) {
@@ -76,3 +78,120 @@ if (!function_exists('rabbit_hole_meta_box')) {
 }
 add_action('add_meta_boxes', 'rabbit_hole_meta_box');
 
+/* USER ********* */
+
+if (!function_exists('rabbit_hole_save_user_meta_box_data')) {
+
+    /**
+     * Save additional profile fields.
+     *
+     * @param  int $user_id Current user ID.
+     */
+    function rabbit_hole_save_user_meta_box_data($user_id) {
+        
+        // Check if our nonce is set.
+        if (!isset($_POST['rabbit_hole_nonce'])) {
+            return;
+        }
+
+        if (!current_user_can('edit_user', $user_id)) {
+            return false;
+        }
+
+        // Make sure that it is set.
+        if (isset($_POST['rabbit_hole'])) {
+
+            $rabbit_hole = $_POST['rabbit_hole'];
+            $rabbit_hole = array_map('sanitize_text_field', $rabbit_hole);
+
+            // Update the meta field in the database.
+            update_usermeta($user_id, 'rabbit_hole', $rabbit_hole);
+        }
+    }
+
+}
+add_action('personal_options_update', 'rabbit_hole_save_user_meta_box_data');
+add_action('edit_user_profile_update', 'rabbit_hole_save_user_meta_box_data');
+
+if (!function_exists('rabbit_hole_user_meta_box')) {
+
+    /**
+     * Add new fields above 'Update' button.
+     *
+     * @param WP_User $user User object.
+     */
+    function rabbit_hole_user_meta_box($user) {
+        // Add a nonce field so we can check for it later.
+        wp_nonce_field('rabbit_hole_nonce', 'rabbit_hole_nonce');
+        $settings = get_user_meta($user->ID, 'rabbit_hole', true);
+        foreach ($user->roles as $role) {
+            rabbit_hole_config($role, $settings, true);
+        }
+        rabbit_hole_assets();
+    }
+
+}
+add_action('show_user_profile', 'rabbit_hole_user_meta_box');
+add_action('edit_user_profile', 'rabbit_hole_user_meta_box');
+
+/* TERM ********* */
+
+function rabbit_hole_term_type_update($term_id, $tt_id, $taxonomy) {
+
+    // Check if our nonce is set.
+    if (!isset($_POST['rabbit_hole_nonce'])) {
+        return;
+    }
+
+    if (!current_user_can('edit_posts', $term_id)) {
+        return false;
+    }
+
+    if (isset($_POST['rabbit_hole'])) {
+        $rabbit_hole = $_POST['rabbit_hole'];
+        $rabbit_hole = array_map('sanitize_text_field', $rabbit_hole);
+        update_term_meta($term_id, 'rabbit_hole', $rabbit_hole);
+    }
+}
+
+add_action('created_term', 'rabbit_hole_term_type_update', 10, 3);
+add_action('edit_term', 'rabbit_hole_term_type_update', 10, 3);
+
+if (!function_exists('rabbit_hole_term_meta_box')) {
+
+    function rabbit_hole_term_meta_box($term = null) {
+        // Add a nonce field so we can check for it later.
+        wp_nonce_field('rabbit_hole_nonce', 'rabbit_hole_nonce');
+        $settings = [];
+        if (isset($_GET['taxonomy'])) {
+            $taxonomy = $_GET['taxonomy'];
+        }
+        if (is_string($term)) {
+            $taxonomy = $term;
+        }
+        if (is_object($term) && get_class($term) == 'WP_Term') {
+            $taxonomy = $term->taxonomy;
+            $settings = get_term_meta($term->term_id, 'rabbit_hole', true);
+        }
+        rabbit_hole_config($taxonomy, $settings, true);
+        rabbit_hole_assets();
+    }
+
+}
+
+$settings = get_option('rabbit_hole');
+if (!empty($settings['tax']) && is_array($settings['tax'])) {
+    foreach ($settings['tax'] as $tax => $setting) {
+        if (!empty($setting['allow_override'])) {
+            add_action($tax . '_edit_form', 'rabbit_hole_term_meta_box');
+            add_action($tax . '_add_form_fields', 'rabbit_hole_term_meta_box');
+        }
+    }
+}
+$taxonomies = get_taxonomies();
+/*foreach ($taxonomies as $tax => $taxonomy) {
+    //add_action($tax.'_edit_form_fields', 'rabbit_hole_term_meta_box'); 
+    add_action($tax . '_edit_form', 'rabbit_hole_term_meta_box');
+    add_action($tax . '_add_form_fields', 'rabbit_hole_term_meta_box');
+    //add_action($tax.'_add_form', 'rabbit_hole_term_meta_box');
+}*/
