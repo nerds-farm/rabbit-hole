@@ -1,5 +1,5 @@
 === Rabbit Hole ===
-Contributors: nerdsfarm, frapesce
+Contributors: frapesce
 Tags: redirect, 404, seo, cpt, post type, deny, allow
 Requires at least: 4.9
 Tested up to: 6.4
