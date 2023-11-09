@@ -26,7 +26,7 @@ You have the ability to
 - Or simply display the entity (regular behavior, 200).
 
 This is configurable per:
-- post type and single post. 
+- post types and single post
 - taxonomy and single term
 - roles and single user
 
