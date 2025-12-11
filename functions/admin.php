@@ -2,12 +2,15 @@
 if (!function_exists('rabbit_hole_register_settings')) {
 
     function rabbit_hole_register_settings() {
-        add_option('rabbit_hole', '[]');
-        register_setting('rabbit_hole_options_group', 'rabbit_hole');
-        if (!empty($_GET['page']) && $_GET['page'] == 'rabbit_hole' 
-                && !empty($_GET['action']) && $_GET['action'] == 'reset') {
-            delete_option('rabbit_hole');
-            wp_redirect(admin_url('options-general.php?page=rabbit_hole'));
+        $user_id = get_current_user_id();
+        if (check_admin_referer( 'rabbit-hole-settings_'.$user_id )) {
+            add_option('rabbit_hole', '[]');
+            register_setting('rabbit_hole_options_group', 'rabbit_hole');
+            if (!empty($_GET['page']) && $_GET['page'] == 'rabbit_hole' 
+                    && !empty($_GET['action']) && $_GET['action'] == 'reset') {
+                delete_option('rabbit_hole');
+                wp_redirect(admin_url('options-general.php?page=rabbit_hole'));
+            }
         }
     }
 
@@ -103,6 +106,7 @@ if (!function_exists('rabbit_hole_options_page')) {
         $rabbit_hole = get_option('rabbit_hole');
         //echo '<pre>';var_dump($rabbit_hole);echo '</pre>';
         //content on page goes here
+        $user_id = get_current_user_id();
         ?>
         <div id="rabbit_hole">
             <a class="float-end rh-version" href="https://wordpress.org/plugins/rabbit-hole/" target="_blank">v1.1 <span class="dashicons dashicons-info-outline"></span></a>
@@ -210,6 +214,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                 <a href="?page=rabbit_hole&action=reset" class="button button-primary button-danger button-reset"><span class="dashicons dashicons-warning"style="vertical-align: text-top;"></span> <?php esc_html_e('Reset Settings', 'rabbit-hole'); ?></a>
                 <?php
                 }
+                wp_nonce_field( 'rabbit-hole-settings_'.$user_id );
                 submit_button();
                 ?>
             </form>
