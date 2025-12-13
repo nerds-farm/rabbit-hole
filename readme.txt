@@ -1,6 +1,6 @@
 === Rabbit Hole ===
 Contributors: frapesce
-Tags: redirect, 404, seo, cpt, post type, deny, allow
+Tags: redirect, seo, deny, allow, cpt
 Requires at least: 4.9
 Tested up to: 6.9
 Stable tag: 1.2

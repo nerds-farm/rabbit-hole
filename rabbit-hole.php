@@ -11,7 +11,6 @@
  * License:     GPLv3 or later
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  * Text Domain: rabbit-hole
- * Domain Path: /languages
  * Requires at least: 4.9
  * Tested up to: 6.9
  *
