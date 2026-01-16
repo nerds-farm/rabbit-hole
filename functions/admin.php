@@ -2,12 +2,16 @@
 if (!function_exists('rabbit_hole_register_settings')) {
 
     function rabbit_hole_register_settings() {
-        $user_id = get_current_user_id();
-        if (check_admin_referer( 'rabbit-hole-settings_'.$user_id )) {
-            add_option('rabbit_hole', '[]');
-            register_setting('rabbit_hole_options_group', 'rabbit_hole');
-            if (!empty($_GET['page']) && $_GET['page'] == 'rabbit_hole' 
-                    && !empty($_GET['action']) && $_GET['action'] == 'reset') {
+        add_option('rabbit_hole', '[]');
+        register_setting('rabbit_hole_options_group', 'rabbit_hole');
+        if (!empty($_GET['page']) && $_GET['page'] == 'rabbit_hole') {
+            $user_id = get_current_user_id();
+            if (!empty($_POST)) {
+                if (check_admin_referer('save_rabbit', 'rabbit-hole-settings_' . $user_id)) {
+                    // STOP INSECURE ACTIONS
+                }
+            }
+            if (!empty($_GET['action']) && $_GET['action'] == 'reset') {
                 delete_option('rabbit_hole');
                 wp_redirect(admin_url('options-general.php?page=rabbit_hole'));
             }
@@ -32,7 +36,7 @@ if (!function_exists('rabbit_hole_options_page')) {
         $allow_override = !empty($settings['allow_override']) ? $settings['allow_override'] : '';
         $disable_bypassing = !empty($settings['disable_bypassing']) ? $settings['disable_bypassing'] : '';
         $display_message = !empty($settings['display_message']) ? $settings['display_message'] : '';
-        
+
         $akey = '';
         if ($type != '' && $type != 'post') {
             $akey = '[' . $type . ']' . $akey;
@@ -79,8 +83,8 @@ if (!function_exists('rabbit_hole_options_page')) {
                 <label class="accordion-section-content accordion-section-content--message" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content_txt" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content"<?php if (!$disable_bypassing) { ?> style="display: none;"<?php } ?>>
                     <b><?php _e('Display Content', 'rabbit-hole'); ?></b><br>
                     <textarea placeholder="<?php _e('You are not allowed to access this page.', 'rabbit-hole'); ?>" rows="4" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][display_message_content]" class="rh-display-message-content" style="width: 100%;"><?php
-                echo empty($settings['display_message_content']) ? '' : $settings['display_message_content'];
-                ?></textarea>
+                        echo empty($settings['display_message_content']) ? '' : $settings['display_message_content'];
+                        ?></textarea>
                 </label> 
 
                 <br>
@@ -118,103 +122,103 @@ if (!function_exists('rabbit_hole_options_page')) {
                 do_settings_sections('rabbit_hole_options_group');
                 ?>
                 <div class="bg-white rh-wrapper">
-                <h2> <?php esc_html_e('Post Types', 'rabbit-hole'); ?></h2>
-                <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
+                    <h2> <?php esc_html_e('Post Types', 'rabbit-hole'); ?></h2>
+                    <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
+                        <?php
+                        $i = 0;
+                        foreach ($post_types as $ptkey => $post_type) {
+                            ?>
+                            <a href="#<?php echo esc_attr($ptkey); ?>" class="nav-tab<?php echo (!$i) ? ' nav-tab-active' : ''; ?>" aria-current="page">
+                                <?php
+                                if (!empty($rabbit_hole[$ptkey]['allow_override']) || (!empty($rabbit_hole[$ptkey]['behavior']) && $rabbit_hole[$ptkey]['behavior'] != '200')) {
+                                    echo $icon;
+                                }
+                                ?>
+                                <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($post_type->label); ?></abbr>
+                            </a>
+                            <?php
+                            $i++;
+                        }
+                        ?>
+                    </nav>
                     <?php
                     $i = 0;
                     foreach ($post_types as $ptkey => $post_type) {
-                        ?>
-                        <a href="#<?php echo esc_attr($ptkey); ?>" class="nav-tab<?php echo (!$i) ? ' nav-tab-active' : ''; ?>" aria-current="page">
-                            <?php
-                            if (!empty($rabbit_hole[$ptkey]['allow_override']) || (!empty($rabbit_hole[$ptkey]['behavior']) && $rabbit_hole[$ptkey]['behavior'] != '200')) {
-                                echo $icon;
-                            }
-                            ?>
-                            <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($post_type->label); ?></abbr>
-                        </a>
-                        <?php
+                        $settings = !empty($rabbit_hole[$ptkey]) ? $rabbit_hole[$ptkey] : [];
+                        $label = esc_html__($post_type->label);
+                        rabbit_hole_print_settings($ptkey, $label, $settings, 'post', $i);
                         $i++;
                     }
                     ?>
-                </nav>
-                <?php
-                $i = 0;
-                foreach ($post_types as $ptkey => $post_type) {
-                    $settings = !empty($rabbit_hole[$ptkey]) ? $rabbit_hole[$ptkey] : [];
-                    $label = esc_html__($post_type->label);
-                    rabbit_hole_print_settings($ptkey, $label, $settings, 'post', $i);
-                    $i++;
-                }
-                ?>
                 </div>
 
                 <hr>
                 <div class="bg-white rh-wrapper">
-                <h2> <?php esc_html_e('Taxonomies', 'rabbit-hole'); ?></h2>
-                <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
+                    <h2> <?php esc_html_e('Taxonomies', 'rabbit-hole'); ?></h2>
+                    <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
+                        <?php
+                        $taxonomies = get_taxonomies();
+                        foreach ($taxonomies as $ptkey => $taxonomy) {
+                            $taxonomy = get_taxonomy($taxonomy);
+                            //var_dump($taxonomy);
+                            if ($taxonomy->publicly_queryable) {
+                                ?>
+                                <a href="#<?php esc_attr_e($ptkey); ?>" class="nav-tab" aria-current="page">
+                                    <?php
+                                    if (!empty($rabbit_hole['tax'][$ptkey]['allow_override']) || (!empty($rabbit_hole['tax'][$ptkey]['behavior']) && $rabbit_hole['tax'][$ptkey]['behavior'] != '200')) {
+                                        echo $icon;
+                                    }
+                                    ?>
+                                    <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($taxonomy->label); ?></abbr></a>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </nav>
                     <?php
-                    $taxonomies = get_taxonomies();
                     foreach ($taxonomies as $ptkey => $taxonomy) {
+                        $ptkey = $ptkey;
+                        $settings = !empty($rabbit_hole['tax'][$ptkey]) ? $rabbit_hole['tax'][$ptkey] : [];
                         $taxonomy = get_taxonomy($taxonomy);
-                        //var_dump($taxonomy);
-                        if ($taxonomy->publicly_queryable) {
+                        $label = esc_html__($taxonomy->label);
+                        rabbit_hole_print_settings($ptkey, $label, $settings, 'tax', $i);
+                    }
+                    ?>
+                </div>
+
+                <hr>
+                <div class="bg-white rh-wrapper">
+                    <h2><?php esc_html_e('User Roles', 'rabbit-hole'); ?></h2>
+                    <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
+                        <?php
+                        //var_dump($roles);
+                        foreach ($roles->roles as $ptkey => $role) {
                             ?>
                             <a href="#<?php esc_attr_e($ptkey); ?>" class="nav-tab" aria-current="page">
                                 <?php
-                                if (!empty($rabbit_hole['tax'][$ptkey]['allow_override']) || (!empty($rabbit_hole['tax'][$ptkey]['behavior']) && $rabbit_hole['tax'][$ptkey]['behavior'] != '200')) {
-                                    echo $icon;
-                                }
-                                ?>
-                                <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($taxonomy->label); ?></abbr></a>
-                            <?php
-                        }
-                    }
-                    ?>
-                </nav>
-                <?php
-                foreach ($taxonomies as $ptkey => $taxonomy) {
-                    $ptkey = $ptkey;
-                    $settings = !empty($rabbit_hole['tax'][$ptkey]) ? $rabbit_hole['tax'][$ptkey] : [];
-                    $taxonomy = get_taxonomy($taxonomy);
-                    $label = esc_html__($taxonomy->label);
-                    rabbit_hole_print_settings($ptkey, $label, $settings, 'tax', $i);
-                }
-                ?>
-                </div>
-                
-                <hr>
-                <div class="bg-white rh-wrapper">
-                <h2><?php esc_html_e('User Roles', 'rabbit-hole'); ?></h2>
-                <nav class="nav-tab-wrapper wp-clearfix" aria-label="Secondary menu">
-                    <?php
-                    //var_dump($roles);
-                    foreach ($roles->roles as $ptkey => $role) {
-                        ?>
-                        <a href="#<?php esc_attr_e($ptkey); ?>" class="nav-tab" aria-current="page">
-                            <?php
                                 if (!empty($rabbit_hole['role'][$ptkey]['allow_override']) || (!empty($rabbit_hole['role'][$ptkey]['behavior']) && $rabbit_hole['role'][$ptkey]['behavior'] != '200')) {
                                     echo $icon;
                                 }
                                 ?>
-                            <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($role['name']); ?></abbr></a>
-                        <?php
+                                <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($role['name']); ?></abbr></a>
+                            <?php
+                        }
+                        ?>
+                    </nav>
+                    <?php
+                    foreach ($roles->roles as $ptkey => $role) {
+                        $settings = !empty($rabbit_hole['role'][$ptkey]) ? $rabbit_hole['role'][$ptkey] : [];
+                        $label = esc_html__($role['name']);
+                        rabbit_hole_print_settings($ptkey, $label, $settings, 'role', $i);
                     }
                     ?>
-                </nav>
-                <?php
-                foreach ($roles->roles as $ptkey => $role) {
-                    $settings = !empty($rabbit_hole['role'][$ptkey]) ? $rabbit_hole['role'][$ptkey] : [];
-                    $label = esc_html__($role['name']);
-                    rabbit_hole_print_settings($ptkey, $label, $settings, 'role', $i);
-                }
-                ?>
                 </div>
                 <br><br>
                 <?php if (!empty($settings)) { ?>
-                <a href="?page=rabbit_hole&action=reset" class="button button-primary button-danger button-reset"><span class="dashicons dashicons-warning"style="vertical-align: text-top;"></span> <?php esc_html_e('Reset Settings', 'rabbit-hole'); ?></a>
-                <?php
+                    <a href="?page=rabbit_hole&action=reset" class="button button-primary button-danger button-reset"><span class="dashicons dashicons-warning"style="vertical-align: text-top;"></span> <?php esc_html_e('Reset Settings', 'rabbit-hole'); ?></a>
+                    <?php
                 }
-                wp_nonce_field( 'rabbit-hole-settings_'.$user_id );
+                wp_nonce_field('save_rabbit', 'rabbit-hole-settings_' . $user_id);
                 submit_button();
                 ?>
             </form>
@@ -222,11 +226,11 @@ if (!function_exists('rabbit_hole_options_page')) {
         <br class="clear">
         <?php
         $footer_text = sprintf(
-			/* translators: 1: Elementor, 2: Link to plugin review */
-				__( 'Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!', 'rabbit-hole' ),
-				'<strong>' . esc_html__( 'Rabbit Hole', 'rabbit-hole' ) . '</strong>',
-				'<a href="https://wordpress.org/support/plugin/rabbit-hole/reviews/#new-post" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
-			);
+                /* translators: 1: Elementor, 2: Link to plugin review */
+                __('Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!', 'rabbit-hole'),
+                '<strong>' . esc_html__('Rabbit Hole', 'rabbit-hole') . '</strong>',
+                '<a href="https://wordpress.org/support/plugin/rabbit-hole/reviews/#new-post" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
+        );
         echo $footer_text;
         rabbit_hole_assets();
     }
