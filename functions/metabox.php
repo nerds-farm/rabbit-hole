@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 /* POST ********* */
 
 if (!function_exists('rabbit_hole_meta_box_callback')) {
@@ -43,7 +43,7 @@ if (!function_exists('rabbit_hole_save_meta_box_data')) {
             return;
         }
 
-        $rabbit_hole = $_POST['rabbit_hole'];
+        $rabbit_hole = wp_unslash($_POST['rabbit_hole']);
         $rabbit_hole = array_map('sanitize_text_field', $rabbit_hole);
 
         // Update the meta field in the database.
@@ -68,7 +68,7 @@ if (!function_exists('rabbit_hole_meta_box')) {
         foreach ($screens as $screen) {
             add_meta_box(
                     'rabbit_hole',
-                    __('Rabbit Hole', 'rabbit-hole'),
+                    esc_html__('Rabbit Hole', 'rabbit-hole'),
                     'rabbit_hole_meta_box_callback',
                     $screen
             );
@@ -93,6 +93,11 @@ if (!function_exists('rabbit_hole_save_user_meta_box_data')) {
         if (!isset($_POST['rabbit_hole_nonce'])) {
             return;
         }
+        
+        // Verify that the nonce is valid.
+        if (!wp_verify_nonce($_POST['rabbit_hole_nonce'], 'rabbit_hole_nonce')) {
+            return;
+        }
 
         if (!current_user_can('edit_user', $user_id)) {
             return false;
@@ -101,11 +106,11 @@ if (!function_exists('rabbit_hole_save_user_meta_box_data')) {
         // Make sure that it is set.
         if (isset($_POST['rabbit_hole'])) {
 
-            $rabbit_hole = $_POST['rabbit_hole'];
+            $rabbit_hole = wp_unslash($_POST['rabbit_hole']);
             $rabbit_hole = array_map('sanitize_text_field', $rabbit_hole);
 
             // Update the meta field in the database.
-            update_usermeta($user_id, 'rabbit_hole', $rabbit_hole);
+            update_user_meta($user_id, 'rabbit_hole', $rabbit_hole);
         }
     }
 
@@ -142,13 +147,18 @@ function rabbit_hole_term_type_update($term_id, $tt_id, $taxonomy) {
     if (!isset($_POST['rabbit_hole_nonce'])) {
         return;
     }
+    
+    // Verify that the nonce is valid.
+    if (!wp_verify_nonce($_POST['rabbit_hole_nonce'], 'rabbit_hole_nonce')) {
+        return;
+    }
 
     if (!current_user_can('edit_posts', $term_id)) {
         return false;
     }
 
     if (isset($_POST['rabbit_hole'])) {
-        $rabbit_hole = $_POST['rabbit_hole'];
+        $rabbit_hole = wp_unslash($_POST['rabbit_hole']);
         $rabbit_hole = array_map('sanitize_text_field', $rabbit_hole);
         update_term_meta($term_id, 'rabbit_hole', $rabbit_hole);
     }
@@ -164,7 +174,7 @@ if (!function_exists('rabbit_hole_term_meta_box')) {
         wp_nonce_field('rabbit_hole_nonce', 'rabbit_hole_nonce');
         $settings = [];
         if (isset($_GET['taxonomy'])) {
-            $taxonomy = $_GET['taxonomy'];
+            $taxonomy = sanitize_key($_GET['taxonomy']);
         }
         if (is_string($term)) {
             $taxonomy = $term;
@@ -179,16 +189,16 @@ if (!function_exists('rabbit_hole_term_meta_box')) {
 
 }
 
-$settings = get_option('rabbit_hole');
-if (!empty($settings['tax']) && is_array($settings['tax'])) {
-    foreach ($settings['tax'] as $tax => $setting) {
-        if (!empty($setting['allow_override'])) {
+$rabbit_hole_settings = get_option('rabbit_hole');
+if (!empty($rabbit_hole_settings['tax']) && is_array($rabbit_hole_settings['tax'])) {
+    foreach ($rabbit_hole_settings['tax'] as $tax => $rabbit_hole_setting) {
+        if (!empty($rabbit_hole_setting['allow_override'])) {
             add_action($tax . '_edit_form', 'rabbit_hole_term_meta_box');
             add_action($tax . '_add_form_fields', 'rabbit_hole_term_meta_box');
         }
     }
 }
-$taxonomies = get_taxonomies();
+//$taxonomies = get_taxonomies();
 /*foreach ($taxonomies as $tax => $taxonomy) {
     //add_action($tax.'_edit_form_fields', 'rabbit_hole_term_meta_box'); 
     add_action($tax . '_edit_form', 'rabbit_hole_term_meta_box');

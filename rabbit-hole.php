@@ -28,13 +28,13 @@ if (!defined('ABSPATH')) {
 define('RABBIT_HOLE__FILE__', __FILE__);
 define('RABBIT_HOLE_PATH', plugin_dir_path(RABBIT_HOLE__FILE__));
 define('RABBIT_HOLE_URL', plugins_url('/', RABBIT_HOLE__FILE__));
+define('RABBIT_HOLE_FNC', RABBIT_HOLE_PATH.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR);
 
-$fnc = RABBIT_HOLE_PATH.DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR;
 if (is_admin()) {
-    include_once($fnc.'settings.php');
-    include_once($fnc.'admin.php');
-    include_once($fnc.'metabox.php');
+    include_once(RABBIT_HOLE_FNC.'settings.php');
+    include_once(RABBIT_HOLE_FNC.'admin.php');
+    include_once(RABBIT_HOLE_FNC.'metabox.php');
 } else {
-    include_once($fnc.'frontend.php');
+    include_once(RABBIT_HOLE_FNC.'frontend.php');
 }
 

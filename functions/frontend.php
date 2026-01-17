@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 if (!function_exists('rabbit_hole_frontend')) {
 
@@ -181,8 +182,8 @@ if (!function_exists('rabbit_hole_frontend')) {
                         $status = $settings['redirect_response'] ? intval($settings['redirect_response']) : 301;
                         $location = do_shortcode($settings['url']);
                         if (!empty($location)) {
-                            wp_redirect($location, $status);
-                            exit;
+                            wp_safe_redirect($location, $status);
+                            exit();
                         }
                         break;
 

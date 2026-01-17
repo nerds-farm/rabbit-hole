@@ -1,9 +1,16 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
+
 if (!function_exists('rabbit_hole_register_settings')) {
 
     function rabbit_hole_register_settings() {
         add_option('rabbit_hole', '[]');
-        register_setting('rabbit_hole_options_group', 'rabbit_hole');
+        $args = array(
+            'type' => 'array', 
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => [],
+        );
+        register_setting('rabbit_hole_options_group', 'rabbit_hole'); //, $args);
         if (!empty($_GET['page']) && $_GET['page'] == 'rabbit_hole') {
             $user_id = get_current_user_id();
             if (!empty($_POST)) {
@@ -13,7 +20,8 @@ if (!function_exists('rabbit_hole_register_settings')) {
             }
             if (!empty($_GET['action']) && $_GET['action'] == 'reset') {
                 delete_option('rabbit_hole');
-                wp_redirect(admin_url('options-general.php?page=rabbit_hole'));
+                wp_safe_redirect(admin_url('options-general.php?page=rabbit_hole'));
+                exit();
             }
         }
     }
@@ -43,22 +51,22 @@ if (!function_exists('rabbit_hole_options_page')) {
         }
         ?>
         <div class="rh-settings postbox" id="<?php echo esc_attr($ptkey); ?>" <?php echo ($i) ? ' style="display:none;"' : ''; ?>>
-            <div class="postbox-header"><h3 class="hndle ui-sortable-handle"><?php echo $label ?></h3></div>
+            <div class="postbox-header"><h3 class="hndle ui-sortable-handle"><?php echo esc_html($label) ?></h3></div>
             <div class="inner">
                 <label class="bulk-select-button" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__allow_override">
-                    <input type="checkbox" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__allow_override" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][allow_override]"<?php echo $allow_override ? ' checked' : ''; ?>>
-                    <?php _e('Allow these settings to be overridden for individual entities', 'rabbit-hole'); ?>
-                    <br><small><?php _e('If checked, users with the Administer Rabbit Hole settings for Content permission will be able to override these settings for individual entities.', 'rabbit-hole'); ?> </small>
+                    <input type="checkbox" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__allow_override" name="rabbit_hole<?php echo esc_attr($akey); ?>[<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>][allow_override]"<?php echo $allow_override ? ' checked' : ''; ?>>
+                    <?php esc_html_e('Allow these settings to be overridden for individual entities', 'rabbit-hole'); ?>
+                    <br><small><?php esc_html_e('If checked, users with the Administer Rabbit Hole settings for Content permission will be able to override these settings for individual entities.', 'rabbit-hole'); ?> </small>
                 </label>
 
                 <label class="bulk-select-button" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing">
-                    <input type="checkbox" class="rh-disable-bypassing" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][disable_bypassing]"<?php echo $disable_bypassing ? ' checked' : ''; ?>>
-                    <?php _e('Enable permissions-based bypassing', 'rabbit-hole'); ?>
-                    <br><small><?php _e('If checked, users will be able to bypass configured Rabbit Hole behavior. It will be applied to Administrators and other users with bypass permissions.', 'rabbit-hole'); ?> </small>
+                    <input type="checkbox" class="rh-disable-bypassing" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing" name="rabbit_hole<?php echo esc_attr($akey); ?>[<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>][disable_bypassing]"<?php echo $disable_bypassing ? ' checked' : ''; ?>>
+                    <?php esc_html_e('Enable permissions-based bypassing', 'rabbit-hole'); ?>
+                    <br><small><?php esc_html_e('If checked, users will be able to bypass configured Rabbit Hole behavior. It will be applied to Administrators and other users with bypass permissions.', 'rabbit-hole'); ?> </small>
                 </label>
                 <label class="accordion-section-content accordion-section-content--roles" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing_roles_select" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing_roles"<?php if (!$disable_bypassing) { ?> style="display: none;"<?php } ?>>
-                    <b><?php _e('Roles with bypass permissions', 'rabbit-hole'); ?></b><br>
-                    <select multiple id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing_roles" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][disable_bypassing_roles]" class="rh-disable-bypassing-roles" style="width: 100%;">
+                    <b><?php esc_html_e('Roles with bypass permissions', 'rabbit-hole'); ?></b><br>
+                    <select multiple id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__disable_bypassing_roles" name="rabbit_hole<?php echo esc_attr($akey); ?>[<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>][disable_bypassing_roles]" class="rh-disable-bypassing-roles" style="width: 100%;">
                         <?php
                         $bypass_roles = empty($settings['disable_bypassing_roles']) ? [] : $settings['disable_bypassing_roles'];
                         if (is_string($bypass_roles)) {
@@ -68,7 +76,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                         foreach ($roles->roles as $rkey => $role) {
                             $selected = ((empty($bypass_roles) && $rkey == 'administrator') || (!empty($bypass_roles) && in_array($rkey, $bypass_roles))) ? ' selected' : '';
                             ?>
-                            <option<?php echo $selected; ?> value="<?php esc_attr_e($rkey); ?>"><?php esc_html_e($role['name']); ?></option>
+                            <option<?php echo $selected; ?> value="<?php esc_attr_e($rkey, 'rabbit-hole'); ?>"><?php esc_html_e($role['name'], 'rabbit-hole'); ?></option>
                             <?php
                         }
                         ?>
@@ -76,13 +84,13 @@ if (!function_exists('rabbit_hole_options_page')) {
                 </label>  
 
                 <label class="bulk-select-button" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message">
-                    <input type="checkbox" class="rh-disable-message" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][display_message]"<?php echo $display_message ? ' checked' : ''; ?>>
-                    <?php _e('Display a message when viewing the page', 'rabbit-hole'); ?>
-                    <br><small><?php _e('If checked, users who NOT bypassed the Rabbit Hole action, will see a warning message when viewing the page. ', 'rabbit-hole'); ?> </small>
+                    <input type="checkbox" class="rh-disable-message" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message" name="rabbit_hole<?php echo esc_attr($akey); ?>[<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>][display_message]"<?php echo $display_message ? ' checked' : ''; ?>>
+                    <?php esc_html_e('Display a message when viewing the page', 'rabbit-hole'); ?>
+                    <br><small><?php esc_html_e('If checked, users who NOT bypassed the Rabbit Hole action, will see a warning message when viewing the page. ', 'rabbit-hole'); ?> </small>
                 </label>
                 <label class="accordion-section-content accordion-section-content--message" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content_txt" for="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content"<?php if (!$disable_bypassing) { ?> style="display: none;"<?php } ?>>
-                    <b><?php _e('Display Content', 'rabbit-hole'); ?></b><br>
-                    <textarea placeholder="<?php _e('You are not allowed to access this page.', 'rabbit-hole'); ?>" rows="4" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content" name="rabbit_hole<?php echo $akey; ?>[<?php esc_attr_e($ptkey); ?>][display_message_content]" class="rh-display-message-content" style="width: 100%;"><?php
+                    <b><?php esc_html_e('Display Content', 'rabbit-hole'); ?></b><br>
+                    <textarea placeholder="<?php esc_html_e('You are not allowed to access this page.', 'rabbit-hole'); ?>" rows="4" id="rabbit_hole__<?php echo esc_attr($ptkey); ?>__display_message_content" name="rabbit_hole<?php echo esc_attr($akey); ?>[<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>][display_message_content]" class="rh-display-message-content" style="width: 100%;"><?php
                         echo empty($settings['display_message_content']) ? '' : $settings['display_message_content'];
                         ?></textarea>
                 </label> 
@@ -114,7 +122,7 @@ if (!function_exists('rabbit_hole_options_page')) {
         ?>
         <div id="rabbit_hole">
             <a class="float-end rh-version" href="https://wordpress.org/plugins/rabbit-hole/" target="_blank">v1.1 <span class="dashicons dashicons-info-outline"></span></a>
-            <h1><img class="rh-logo" src="<?php echo plugin_dir_url(__FILE__); ?>../assets/img/icon.svg"width="60" height="60"> <?php esc_html_e('Rabbit Hole', 'rabbit-hole'); ?> </h1>
+            <h1><img class="rh-logo" src="<?php echo esc_url(plugin_dir_url(__FILE__)); ?>../assets/img/icon.svg"width="60" height="60"> <?php esc_html_e('Rabbit Hole', 'rabbit-hole'); ?> </h1>
             <hr class="wp-header-end">
             <form method="POST" action="options.php">
                 <?php
@@ -134,7 +142,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                                     echo $icon;
                                 }
                                 ?>
-                                <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($post_type->label); ?></abbr>
+                                <abbr title="<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>"><?php esc_html_e($post_type->label, 'rabbit-hole'); ?></abbr>
                             </a>
                             <?php
                             $i++;
@@ -145,7 +153,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                     $i = 0;
                     foreach ($post_types as $ptkey => $post_type) {
                         $settings = !empty($rabbit_hole[$ptkey]) ? $rabbit_hole[$ptkey] : [];
-                        $label = esc_html__($post_type->label);
+                        $label = esc_html__($post_type->label, 'rabbit-hole');
                         rabbit_hole_print_settings($ptkey, $label, $settings, 'post', $i);
                         $i++;
                     }
@@ -163,13 +171,13 @@ if (!function_exists('rabbit_hole_options_page')) {
                             //var_dump($taxonomy);
                             if ($taxonomy->publicly_queryable) {
                                 ?>
-                                <a href="#<?php esc_attr_e($ptkey); ?>" class="nav-tab" aria-current="page">
+                                <a href="#<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>" class="nav-tab" aria-current="page">
                                     <?php
                                     if (!empty($rabbit_hole['tax'][$ptkey]['allow_override']) || (!empty($rabbit_hole['tax'][$ptkey]['behavior']) && $rabbit_hole['tax'][$ptkey]['behavior'] != '200')) {
                                         echo $icon;
                                     }
                                     ?>
-                                    <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($taxonomy->label); ?></abbr></a>
+                                    <abbr title="<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>"><?php esc_html_e($taxonomy->label, 'rabbit-hole'); ?></abbr></a>
                                 <?php
                             }
                         }
@@ -180,7 +188,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                         $ptkey = $ptkey;
                         $settings = !empty($rabbit_hole['tax'][$ptkey]) ? $rabbit_hole['tax'][$ptkey] : [];
                         $taxonomy = get_taxonomy($taxonomy);
-                        $label = esc_html__($taxonomy->label);
+                        $label = esc_html__($taxonomy->label, 'rabbit-hole');
                         rabbit_hole_print_settings($ptkey, $label, $settings, 'tax', $i);
                     }
                     ?>
@@ -194,13 +202,13 @@ if (!function_exists('rabbit_hole_options_page')) {
                         //var_dump($roles);
                         foreach ($roles->roles as $ptkey => $role) {
                             ?>
-                            <a href="#<?php esc_attr_e($ptkey); ?>" class="nav-tab" aria-current="page">
+                            <a href="#<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>" class="nav-tab" aria-current="page">
                                 <?php
                                 if (!empty($rabbit_hole['role'][$ptkey]['allow_override']) || (!empty($rabbit_hole['role'][$ptkey]['behavior']) && $rabbit_hole['role'][$ptkey]['behavior'] != '200')) {
                                     echo $icon;
                                 }
                                 ?>
-                                <abbr title="<?php esc_attr_e($ptkey); ?>"><?php esc_html_e($role['name']); ?></abbr></a>
+                                <abbr title="<?php esc_attr_e($ptkey, 'rabbit-hole'); ?>"><?php esc_html_e($role['name'], 'rabbit-hole'); ?></abbr></a>
                             <?php
                         }
                         ?>
@@ -208,7 +216,7 @@ if (!function_exists('rabbit_hole_options_page')) {
                     <?php
                     foreach ($roles->roles as $ptkey => $role) {
                         $settings = !empty($rabbit_hole['role'][$ptkey]) ? $rabbit_hole['role'][$ptkey] : [];
-                        $label = esc_html__($role['name']);
+                        $label = esc_html__($role['name'], 'rabbit-hole');
                         rabbit_hole_print_settings($ptkey, $label, $settings, 'role', $i);
                     }
                     ?>
@@ -226,7 +234,7 @@ if (!function_exists('rabbit_hole_options_page')) {
         <br class="clear">
         <?php
         $footer_text = sprintf(
-                /* translators: 1: Elementor, 2: Link to plugin review */
+                /* translators: 1: Rabbit Hole, 2: Link to plugin review */
                 __('Enjoyed %1$s? Please leave us a %2$s rating. We really appreciate your support!', 'rabbit-hole'),
                 '<strong>' . esc_html__('Rabbit Hole', 'rabbit-hole') . '</strong>',
                 '<a href="https://wordpress.org/support/plugin/rabbit-hole/reviews/#new-post" target="_blank">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
