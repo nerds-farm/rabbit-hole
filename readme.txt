@@ -64,6 +64,9 @@ Once you enable the "Allow override" for single post type you will find the dedi
 
 == Changelog ==
 
+= 1.2 - 2026-01-12 =
+* Fix: Security vulnerability, Cross-Site Request Forgery (CSRF) - CVE-2025-13366
+
 = 1.1 - 2023-11-04 =
 * Add: Support for Authors and Terms archives
 * Add: Bypass rules by current User Roles
